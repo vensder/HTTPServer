@@ -1,0 +1,8 @@
+FROM openjdk:8-jdk-alpine
+
+COPY classes/HTTPServer.jar /HTTPServer.jar
+
+ENTRYPOINT ["java", "-Xmx1024m", "-jar", "/HTTPServer.jar"]
+
+EXPOSE 8000
+
