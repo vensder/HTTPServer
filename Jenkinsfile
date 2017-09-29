@@ -25,7 +25,8 @@ node('Build-Server'){
     		docker run --rm --name http-server-\"${env.BRANCH_NAME}\" \
     			-v \"${workspace}\":/tmp \
     			-w /tmp \
-    			openjdk:8-jdk-slim javac -version
+    			openjdk:8-jdk-slim javac -version && \
+    			echo \"${env.BUILD_TAG}\"
 
 			docker run --rm --name http-server-\"${env.BRANCH_NAME}\" \
     			-v \"${workspace}\":/tmp \
