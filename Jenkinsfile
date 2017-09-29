@@ -10,6 +10,7 @@ properties([buildDiscarder(logRotator(
 node('Build-Server'){
 
     def workspace = pwd()
+    def service_name = "http-server"
 
     stage("Cleanup workspace"){
         sh("sudo chown -R `id -u` ${workspace}")
@@ -22,13 +23,13 @@ node('Build-Server'){
 
     stage("Build jar file"){
     	sh("""
-    		docker run --rm --name http-server-\"${env.BRANCH_NAME}\" \
+    		docker run --rm --name ${service_name}-\"${env.BRANCH_NAME}\" \
     			-v \"${workspace}\":/tmp \
     			-w /tmp \
     			openjdk:8-jdk-slim javac -version && \
     			echo \"${env.BUILD_TAG}\"
 
-			docker run --rm --name http-server-\"${env.BRANCH_NAME}\" \
+			docker run --rm --name ${service_name}-\"${env.BRANCH_NAME}\" \
     			-v \"${workspace}\":/tmp \
     			-w /tmp \
     			openjdk:8-jdk-slim javac -d classes/ source/HTTPServer.java && \
@@ -38,14 +39,14 @@ node('Build-Server'){
     }
 
     def docker_stop_rm = """
-	    docker stop http-server || true
-	    docker rm http-server   || true
+	    docker stop ${service_name} || true
+	    docker rm   ${service_name} || true
     """
 
     def build_script = """
-    		docker build -t http-server .
+    		docker build -t ${service_name} .
     		${docker_stop_rm}
-    		docker run -d --name http-server -p 8000:8000 http-server
+    		docker run -d --name ${service_name} -p 8000:8000 http-server
     		sleep 10
     		curl http://localhost:8000/java
     		${docker_stop_rm}
