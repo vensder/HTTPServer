@@ -33,15 +33,12 @@ node('Build-Server'){
     	docker_run_task("$service_name","javac -version && echo ${env.BRANCH_NAME}")
     }
     
+    def task_params = """javac -d classes/ source/HTTPServer.java && \
+						cd classes/ && \
+						jar cvfm HTTPServer.jar manifest.txt *.class"""
+    
     stage("Build jar file"){
-    	sh("""
-			docker run --rm --name ${service_name}-${env.BRANCH_NAME} \
-    			-v ${workspace}:/tmp \
-    			-w /tmp \
-    			openjdk:8-jdk-slim javac -d classes/ source/HTTPServer.java && \
-			cd classes/ && \
-			jar cvfm HTTPServer.jar manifest.txt *.class
-    	""")
+    	docker_run_task("$service_name", "$task_params")
     }
 
     def docker_stop_rm = """
