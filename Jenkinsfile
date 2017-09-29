@@ -9,8 +9,8 @@ properties([buildDiscarder(logRotator(
 
 def service_name = "http-server"
 
-def docker_run_task(taskParams) {
-    sh("""docker run --rm --name http-server-${env.BRANCH_NAME} \
+def docker_run_task(serviceName, taskParams) {
+    sh("""docker run --rm --name ${serviceName}-${env.BRANCH_NAME} \
     			-v ${workspace}:/tmp \
     			-w /tmp \
     			openjdk:8-jdk-slim ${taskParams}""")
@@ -30,7 +30,7 @@ node('Build-Server'){
     }
 
     stage("Test javac version"){
-    	docker_run_task("javac -version && echo ${env.BRANCH_NAME}")
+    	docker_run_task("$service_name","javac -version && echo ${env.BRANCH_NAME}")
     }
     
     stage("Build jar file"){
