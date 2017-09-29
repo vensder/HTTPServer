@@ -35,4 +35,10 @@ node('Build-Server'){
 			jar cvfm HTTPServer.jar manifest.txt *.class
     	""")
     }
+
+    stage("Build docker image"){
+    	sh("""
+    		docker build -t http-server .
+    	""")
+    }
 }
