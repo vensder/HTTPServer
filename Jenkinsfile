@@ -37,8 +37,7 @@ node('Build-Server'){
     	""")
     }
 
-    stage("Build and test docker image"){
-    	sh("""
+    def build_script = """
     		docker build -t http-server .
     		docker stop http-server || true
     		docker rm http-server || true
@@ -47,6 +46,9 @@ node('Build-Server'){
     		curl http://localhost:8000/java
     		docker stop http-server
     		docker rm http-server
-    	""")
+    	"""
+
+    stage("Build and test docker image"){
+    	sh("${build_script}")
     }
 }
