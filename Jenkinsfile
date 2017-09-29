@@ -7,11 +7,11 @@ properties([buildDiscarder(logRotator(
     pipelineTriggers([])
 ])
 
-node('Build-Server') {
+node('Build-Server'){
 
     def workspace = pwd()
 
-    stage("Cleanup workspace") {
+    stage("Cleanup workspace"){
         sh("sudo chown -R `id -u` ${workspace}")
         deleteDir()
     }
@@ -19,5 +19,20 @@ node('Build-Server') {
     stage("Checkout") {
         checkout scm
     }
-}
 
+    stage("Build jar file"){
+    	sh("""
+    		docker run --rm --name http-server-\"${env.BRANCH_NAME}\" \
+    			-v \"${workspace}\":/tmp \
+    			-w /tmp \
+    			openjdk:8-jdk-slim javac -version
+
+			docker run --rm --name http-server-\"${env.BRANCH_NAME}\" \
+    			-v \"${workspace}\":/tmp \
+    			-w /tmp \
+    			openjdk:8-jdk-slim javac -d classes/ source/HTTPServer.java && \
+			cd classes/ && \
+			jar cvfm HTTPServer.jar manifest.txt *.class
+    	""")
+    }
+}
