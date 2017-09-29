@@ -10,7 +10,7 @@ properties([buildDiscarder(logRotator(
 def service_name = "http-server"
 
 def docker_run_task(taskParams) {
-    sh("""docker run --rm --name ${service_name}-${env.BRANCH_NAME} \
+    sh("""docker run --rm --name http-server-${env.BRANCH_NAME} \
     			-v ${workspace}:/tmp \
     			-w /tmp \
     			openjdk:8-jdk-slim ${taskParams}""")
