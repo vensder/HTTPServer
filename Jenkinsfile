@@ -40,6 +40,8 @@ node('Build-Server'){
     stage("Build and test docker image"){
     	sh("""
     		docker build -t http-server .
+    		docker stop http-server || true
+    		docker rm http-server || true
     		docker run -d --name http-server -p 8000:8000 http-server
     		curl http://localhost:8000/java
     		docker stop http-server
