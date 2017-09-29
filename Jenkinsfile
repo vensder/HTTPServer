@@ -23,11 +23,11 @@ node('Build-Server'){
 
     stage("Build jar file"){
     	sh("""
-    		docker run --rm --name ${service_name}-\"${env.BRANCH_NAME}\" \
-    			-v \"${workspace}\":/tmp \
+    		docker run --rm --name ${service_name}-${env.BRANCH_NAME} \
+    			-v ${workspace}:/tmp \
     			-w /tmp \
     			openjdk:8-jdk-slim javac -version && \
-    			echo \"${env.BUILD_TAG}\"
+    			echo ${env.BUILD_TAG}
 
 			docker run --rm --name ${service_name}-\"${env.BRANCH_NAME}\" \
     			-v \"${workspace}\":/tmp \
