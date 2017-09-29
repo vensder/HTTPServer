@@ -44,11 +44,11 @@ node('Build-Server'){
 
     def build_script = """
     		docker build -t http-server .
-    		\"${docker_stop_rm}\"
+    		${docker_stop_rm}
     		docker run -d --name http-server -p 8000:8000 http-server
     		sleep 10
     		curl http://localhost:8000/java
-    		\"${docker_stop_rm}\"
+    		${docker_stop_rm}
     	"""
 
     stage("Build and test docker image"){
