@@ -7,10 +7,21 @@ properties([buildDiscarder(logRotator(
     pipelineTriggers([])
 ])
 
+
+def service_name = "http-server"
+
+def docker_run_task(taskParams) {
+    tryCatchClosure {
+        sh("""docker run --rm --name ${service_name}-${env.BRANCH_NAME} \
+    			-v ${workspace}:/tmp \
+    			-w /tmp \
+    			openjdk:8-jdk-slim ${taskParams}""")
+    }
+}
+
 node('Build-Server'){
 
     def workspace = pwd()
-    def service_name = "http-server"
 
     stage("Cleanup workspace"){
         sh("sudo chown -R `id -u` ${workspace}")
@@ -21,16 +32,14 @@ node('Build-Server'){
         checkout scm
     }
 
+    stage("Test javac version"){
+    	docker_run_task("javac -version && echo ${env.BRANCH_NAME}")
+    }
+    
     stage("Build jar file"){
     	sh("""
-    		docker run --rm --name ${service_name}-${env.BRANCH_NAME} \
+			docker run --rm --name ${service_name}-${env.BRANCH_NAME} \
     			-v ${workspace}:/tmp \
-    			-w /tmp \
-    			openjdk:8-jdk-slim javac -version && \
-    			echo ${env.BUILD_TAG}
-
-			docker run --rm --name ${service_name}-\"${env.BRANCH_NAME}\" \
-    			-v \"${workspace}\":/tmp \
     			-w /tmp \
     			openjdk:8-jdk-slim javac -d classes/ source/HTTPServer.java && \
 			cd classes/ && \
@@ -47,7 +56,7 @@ node('Build-Server'){
     		docker build -t ${service_name} .
     		${docker_stop_rm}
     		docker run -d --name ${service_name} -p 8000:8000 http-server
-    		sleep 10
+    		sleep 5
     		curl http://localhost:8000/java
     		${docker_stop_rm}
     	"""
