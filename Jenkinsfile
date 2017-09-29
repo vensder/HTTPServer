@@ -33,12 +33,12 @@ node('Build-Server'){
     	docker_run_task("$service_name","javac -version && echo ${env.BRANCH_NAME}")
     }
     
-    def task_params = """javac -d classes/ source/HTTPServer.java && \
+    def build_jar = """javac -d classes/ source/HTTPServer.java && \
 						cd classes/ && \
 						jar cvfm HTTPServer.jar manifest.txt *.class"""
     
     stage("Build jar file"){
-    	docker_run_task("$service_name", "$task_params")
+    	docker_run_task("$service_name", "$build_jar")
     }
 
     def docker_stop_rm = """
