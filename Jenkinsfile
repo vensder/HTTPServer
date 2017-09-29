@@ -37,15 +37,18 @@ node('Build-Server'){
     	""")
     }
 
+    def docker_stop_rm = """
+	    docker stop http-server || true
+	    docker rm http-server   || true
+    """
+
     def build_script = """
     		docker build -t http-server .
-    		docker stop http-server || true
-    		docker rm http-server || true
+    		\"${docker_stop_rm}\"
     		docker run -d --name http-server -p 8000:8000 http-server
     		sleep 10
     		curl http://localhost:8000/java
-    		docker stop http-server
-    		docker rm http-server
+    		\"${docker_stop_rm}\"
     	"""
 
     stage("Build and test docker image"){
