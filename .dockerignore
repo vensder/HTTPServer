@@ -1,0 +1,6 @@
+*.class
+.git
+.idea
+Dockerfile
+Jenkinsfile
+README.md
