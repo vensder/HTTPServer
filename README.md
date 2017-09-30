@@ -1,4 +1,4 @@
-# Simple HTTP Server in Java in a Docker Edit
+# Simple HTTP Server in Java in a Docker
 
 Just for CI Pipeline testing.
 
