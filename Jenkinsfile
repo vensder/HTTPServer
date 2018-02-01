@@ -21,6 +21,7 @@ def tryCatchClosure(Closure closure) {
 }
 
 def service_name = "http-server"
+def service_port = "8080"
 
 def docker_run_task(serviceName, taskParams) {
     sh("""docker run --rm --name ${serviceName}-${env.BRANCH_NAME} \
@@ -60,9 +61,9 @@ node('Build-Server') {
     stage("Build and test docker image") {
         sh("""docker build -t ${service_name} .
             ${docker_stop_rm}
-            docker run -d --name ${service_name} -p 8000:8000 ${service_name}
+            docker run -d --name ${service_name} -p ${service_port}:8000 ${service_name}
             sleep 5
-            curl http://localhost:8000/java
+            curl http://localhost:${service_port}/java
             ${docker_stop_rm}""")
     }
 }
