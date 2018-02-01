@@ -21,7 +21,8 @@ def tryCatchClosure(Closure closure) {
 }
 
 def service_name = "http-server"
-def service_port = "8080"
+def service_port = 8080 + env.BUILD_NUMBER.toInteger()
+//def service_port = service_port_number.toString()
 
 def docker_run_task(serviceName, taskParams) {
     sh("""docker run --rm --name ${serviceName}-${env.BRANCH_NAME} \
