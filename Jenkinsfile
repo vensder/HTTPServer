@@ -25,7 +25,7 @@ def service_port = 8080 + env.BUILD_NUMBER.toInteger()
 //def service_port = service_port_number.toString()
 
 def docker_run_task(serviceName, taskParams) {
-    sh("""docker run --rm --name ${serviceName}-${env.BRANCH_NAME} \
+    sh("""docker run --rm --name ${serviceName}-${env.BRANCH_NAME}-${env.BUILD_NUMBER} \
         -v ${workspace}:/tmp \
         -w /tmp \
         openjdk:8-jdk-slim ${taskParams}""")
