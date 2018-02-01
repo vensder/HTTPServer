@@ -36,9 +36,9 @@ def build_jar = """javac -d classes/ source/HTTPServer.java && \
 def docker_stop_rm = """docker stop ${service_name} || true
                         docker rm   ${service_name} || true"""
 
-def build_script = """docker build -t ${service_name} .
+def build_test_script = """docker build -t ${service_name} .
                     ${docker_stop_rm}
-                    docker run -d --name ${service_name} -p 8000:8000 http-server
+                    docker run -d --name ${service_name} -p 8000:8000 ${service_name}
                     sleep 5
                     curl http://localhost:8000/java
                     ${docker_stop_rm}"""
@@ -65,6 +65,6 @@ node('Build-Server') {
     }
 
     stage("Build and test docker image") {
-        sh("${build_script}")
+        sh("${build_test_script}")
     }
 }
