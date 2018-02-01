@@ -62,9 +62,11 @@ node('Build-Server') {
     stage("Build and test docker image") {
         sh("""docker build -t ${service_name} .
             ${docker_stop_rm}
-            docker run --rm -d --name ${service_name} -p ${service_port}:8000 ${service_name}
+            docker network create ${service_name}
+            docker run --rm -d --name ${service_name} --net ${service_name} ${service_name}
             sleep 5
-            curl http://localhost:${service_port}/java
-            ${docker_stop_rm}""")
+            docker run --rm --name alpine-${service_name} --net ${service_name} alpine sh -c \"apk add --update curl && curl ${service_name}:8000/java\"
+            ${docker_stop_rm}
+            docker network rm ${service_name}""")
     }
 }
