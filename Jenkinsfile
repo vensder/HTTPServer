@@ -20,7 +20,7 @@ def tryCatchClosure(Closure closure) {
     }
 }
 
-def service_name = "http-server"
+def service_name = "http-server-" + env.BRANCH_NAME + "-" + env.BUILD_NUMBER
 def service_port = 8080 + env.BUILD_NUMBER.toInteger()
 //def service_port = service_port_number.toString()
 
@@ -62,7 +62,7 @@ node('Build-Server') {
     stage("Build and test docker image") {
         sh("""docker build -t ${service_name} .
             ${docker_stop_rm}
-            docker run -d --name ${service_name} -p ${service_port}:8000 ${service_name}
+            docker run --rm -d --name ${service_name} -p ${service_port}:8000 ${service_name}
             sleep 5
             curl http://localhost:${service_port}/java
             ${docker_stop_rm}""")
